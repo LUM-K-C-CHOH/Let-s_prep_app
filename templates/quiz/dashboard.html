@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="lp-card">
+  <h2>Your Dashboard</h2>
+  <p>Hi {{ user.username }} 👋. Start a new quiz or revisit recent ones.</p>
+  <p>
+    <a class="lp-button" href="{% url 'new_quiz' %}">Create New Quiz</a>
+    <a class="lp-button lp-button-secondary" href="{% url 'history' %}">View All History</a>
+  </p>
+</div>
+
+<div class="lp-card">
+  <h3>Recent Quizzes</h3>
+  {% if recent_sessions %}
+    <ul>
+      {% for session in recent_sessions %}
+        <li>
+          <a href="{% url 'quiz_detail' session.id %}">
+            {{ session.title }} ({{ session.get_question_type_display }}) - {{ session.created_at|date:"M d, Y H:i" }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No quizzes yet. Create your first one!</p>
+  {% endif %}
+</div>
+{% endblock %}

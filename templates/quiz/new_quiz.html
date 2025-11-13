@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="lp-card">
+  <h2>Create a New Quiz</h2>
+  <form method="post" enctype="multipart/form-data" class="lp-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <label for="{{ form.title.id_for_label }}">Quiz Title</label>
+    {{ form.title }}
+
+    <label for="{{ form.file.id_for_label }}">Upload File</label>
+    {{ form.file }}
+
+    <label for="{{ form.question_type.id_for_label }}">Question Format</label>
+    {{ form.question_type }}
+
+    <label for="{{ form.num_questions.id_for_label }}">Number of Questions</label>
+    {{ form.num_questions }}
+
+    <button type="submit" class="lp-button">Generate Quiz</button>
+  </form>
+</div>
+{% endblock %}

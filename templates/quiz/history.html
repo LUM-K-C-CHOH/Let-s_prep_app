@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="lp-card">
+  <h2>Your Quiz History</h2>
+  {% if sessions %}
+    <ul>
+      {% for session in sessions %}
+        <li>
+          <a href="{% url 'quiz_detail' session.id %}">
+            {{ session.title }} ({{ session.get_question_type_display }}) - {{ session.created_at|date:"M d, Y H:i" }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No quiz history yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

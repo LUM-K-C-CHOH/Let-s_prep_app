@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>{{ session.title }}</h1>
+<p>
+  Type: {{ session.get_question_type_display }} |
+  Created: {{ session.created_at|date:"M d, Y H:i" }}
+</p>
+
+<div id="quiz-app"
+     data-question-type="{{ session.question_type }}"
+     data-total="{{ questions|length }}">
+  <div id="progress">
+    Question <span id="current-number">1</span> of {{ questions|length }}
+    <div id="progress-bar">
+      <div id="progress-fill"></div>
+    </div>
+    <p>Score: <span id="score">0</span></p>
+  </div>
+
+  {% comment %} Render all questions but hide them; JS will control {% endcomment %}
+  <div id="questions-container">
+    {% for q in questions %}
+      <div class="question-card"
+           data-index="{{ forloop.counter0 }}"
+           data-type="{{ q.question_type|default:session.question_type }}"
+           data-correct-option="{{ q.correct_option }}"
+           data-answer-text="{{ q.answer_text|escapejs }}">
+        <div class="question-prompt">
+          <pre>{{ q.prompt }}</pre>
+        </div>
+
+        {% if q.question_type == "mcq" or session.question_type == "mcq" %}
+          <div class="mcq-options">
+            <button class="mcq-option" data-letter="A">A. {{ q.option_a }}</button>
+            <button class="mcq-option" data-letter="B">B. {{ q.option_b }}</button>
+            <button class="mcq-option" data-letter="C">C. {{ q.option_c }}</button>
+            <button class="mcq-option" data-letter="D">D. {{ q.option_d }}</button>
+          </div>
+          <p class="feedback"></p>
+
+        {% elif q.question_type == "flashcard" or session.question_type == "flashcard" %}
+          <div class="flashcard" data-flipped="false">
+            <div class="flashcard-front">
+              <strong>Front:</strong>
+              <pre>{{ q.prompt }}</pre>
+            </div>
+            <div class="flashcard-back">
+              <strong>Back:</strong>
+              <pre>{{ q.answer_text }}</pre>
+            </div>
+          </div>
+          <p class="hint">Click the card to flip it.</p>
+
+        {% else %}
+          <div class="short-answer-area">
+            <label>Your answer:</label><br>
+            <textarea class="short-answer-input" rows="3"></textarea><br>
+            <button class="reveal-answer">Reveal Answer</button>
+            <p class="answer-revealed"></p>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div id="nav-buttons">
+    <button id="prev-btn" disabled>Previous</button>
+    <button id="next-btn">Next</button>
+  </div>
+
+  <p style="margin-top: 1rem;">
+    <a href="{% url 'history' %}">Back to history</a> |
+    <a href="{% url 'export_quiz_pdf' session.id %}">Download as PDF</a>
+  </p>
+</div>
+
+<script>
+(function() {
+  const container = document.getElementById('quiz-app');
+  if (!container) return;
+
+  const cards = Array.from(document.querySelectorAll('.question-card'));
+  if (!cards.length) return;
+
+  let currentIndex = 0;
+  let score = 0;
+
+  const total = parseInt(container.dataset.total, 10) || cards.length;
+  const scoreSpan = document.getElementById('score');
+  const currentNumberSpan = document.getElementById('current-number');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const progressFill = document.getElementById('progress-fill');
+
+  function showCard(index) {
+    cards.forEach((card, i) => {
+      card.style.display = (i === index) ? 'block' : 'none';
+    });
+    currentIndex = index;
+    currentNumberSpan.textContent = (index + 1).toString();
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === cards.length - 1);
+
+    const progress = ((index + 1) / total) * 100;
+    progressFill.style.width = progress + '%';
+  }
+
+  // Setup MCQ handlers
+  cards.forEach((card) => {
+    const options = card.querySelectorAll('.mcq-option');
+    const feedback = card.querySelector('.feedback');
+    const correct = card.dataset.correctOption;
+
+    if (options.length && feedback) {
+      options.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const picked = btn.dataset.letter;
+          if (!correct) {
+            feedback.textContent = 'No answer key stored.';
+            return;
+          }
+          if (feedback.dataset.answered === 'true') {
+            return; // don't double score
+          }
+          if (picked === correct) {
+            feedback.textContent = '✅ Correct!';
+            score += 1;
+            scoreSpan.textContent = score.toString();
+          } else {
+            feedback.textContent = '❌ Incorrect. Correct answer: ' + correct;
+          }
+          feedback.dataset.answered = 'true';
+        });
+      });
+    }
+
+    // Flashcard flip
+    const flashcard = card.querySelector('.flashcard');
+    if (flashcard) {
+      flashcard.addEventListener('click', () => {
+        const flipped = flashcard.getAttribute('data-flipped') === 'true';
+        flashcard.setAttribute('data-flipped', flipped ? 'false' : 'true');
+      });
+    }
+
+    // Short/fill answer reveal
+    const revealBtn = card.querySelector('.reveal-answer');
+    const revealArea = card.querySelector('.answer-revealed');
+    if (revealBtn && revealArea) {
+      revealBtn.addEventListener('click', () => {
+        const ans = card.dataset.answerText || '(No answer stored)';
+        revealArea.textContent = 'Answer: ' + ans;
+      });
+    }
+  });
+
+  // Nav buttons
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) showCard(currentIndex - 1);
+  });
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < cards.length - 1) showCard(currentIndex + 1);
+  });
+
+  // Show first
+  showCard(0);
+})();
+</script>
+{% endblock %}

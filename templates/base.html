@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>LET'S PREP</title>
+</head>
+<body>
+  <header>
+    <a href="{% url 'home' %}">LET'S PREP</a>
+    {% if user.is_authenticated %}
+      | <a href="{% url 'dashboard' %}">Dashboard</a>
+      | <a href="{% url 'new_quiz' %}">New Quiz</a>
+      | <a href="{% url 'history' %}">History</a>
+      | <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+      | <a href="{% url 'login' %}">Login</a>
+      | <a href="{% url 'signup' %}">Sign Up</a>
+    {% endif %}
+  </header>
+  <hr>
+  {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,262 @@
+:root {
+    --lp-bg: #ffffff;
+    --lp-text: #111827; /* near black */
+    --lp-blue: #2563eb;
+    --lp-purple: #7c3aed;
+    --lp-border: #e5e7eb;
+    --lp-muted: #6b7280;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background-color: var(--lp-bg);
+    color: var(--lp-text);
+  }
+  
+  /* Header */
+  
+  .lp-header {
+    background: linear-gradient(90deg, var(--lp-blue), var(--lp-purple));
+    color: white;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .lp-header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .lp-logo {
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-decoration: none;
+    color: white;
+  }
+  
+  .lp-nav a {
+    margin-left: 1rem;
+    text-decoration: none;
+    color: #e5e7eb;
+    font-weight: 500;
+  }
+  
+  .lp-nav a:hover {
+    color: #ffffff;
+  }
+  
+  /* Layout */
+  
+  .lp-main {
+    max-width: 960px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+  }
+  
+  /* Cards */
+  
+  .lp-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    border: 1px solid var(--lp-border);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 10px 15px rgba(15, 23, 42, 0.04);
+  }
+  
+  /* Buttons */
+  
+  .lp-button {
+    display: inline-block;
+    background: var(--lp-blue);
+    color: #ffffff;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  
+  .lp-button-secondary {
+    background: var(--lp-purple);
+  }
+  
+  .lp-button:hover {
+    opacity: 0.95;
+  }
+  
+  /* Forms */
+  
+  .lp-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  
+  .lp-form input[type="text"],
+  .lp-form input[type="number"],
+  .lp-form input[type="file"],
+  .lp-form select {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--lp-border);
+    margin-bottom: 0.75rem;
+  }
+  
+  .lp-form button {
+    margin-top: 0.5rem;
+  }
+  
+  /* Footer */
+  
+  .lp-footer {
+    border-top: 1px solid var(--lp-border);
+    padding: 0.75rem 1rem;
+    text-align: center;
+    color: var(--lp-muted);
+    font-size: 0.875rem;
+  }
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0b1020;
+    color: #f7f7ff;
+  }
+  
+  header {
+    margin-bottom: 1rem;
+  }
+  
+  a {
+    color: #9f7aea;
+  }
+  
+  #quiz-app {
+    background: #111827;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #1f2937;
+  }
+  
+  .question-card {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    background: #020617;
+    border: 1px solid #1e293b;
+  }
+  
+  .question-prompt pre {
+    white-space: pre-wrap;
+    font-family: inherit;
+  }
+  
+  #progress {
+    margin-bottom: 0.75rem;
+  }
+  
+  #progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #1f2937;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  #progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    transition: width 0.25s ease-out;
+  }
+  
+  .mcq-options {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  
+  .mcq-option {
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #1f2937;
+    background: #020617;
+    color: #f9fafb;
+    cursor: pointer;
+  }
+  
+  .mcq-option:hover {
+    background: #111827;
+  }
+  
+  .feedback {
+    margin-top: 0.5rem;
+  }
+  
+  .flashcard {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: #020617;
+    cursor: pointer;
+    position: relative;
+    min-height: 120px;
+  }
+  
+  .flashcard-front,
+  .flashcard-back {
+    white-space: pre-wrap;
+  }
+  
+  .flashcard-back {
+    display: none;
+  }
+  
+  .flashcard[data-flipped="true"] .flashcard-front {
+    display: none;
+  }
+  
+  .flashcard[data-flipped="true"] .flashcard-back {
+    display: block;
+  }
+  
+  #nav-buttons {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  #nav-buttons button {
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    border: 1px solid #1f2937;
+    background: #111827;
+    color: #f9fafb;
+    cursor: pointer;
+  }
+  
+  #nav-buttons button:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  
+  textarea.short-answer-input {
+    width: 100%;
+    margin-top: 0.5rem;
+    background: #020617;
+    color: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #1f2937;
+    padding: 0.5rem;
+  }
