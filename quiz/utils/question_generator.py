@@ -6,11 +6,11 @@ import textwrap
 try:
     # New OpenAI client, from openai>=1.x
     from openai import OpenAI
-    _openai_client = OpenAI()
+
+    # Set a *short* timeout so we error in Python instead of letting gunicorn kill the worker
+    _openai_client = OpenAI(timeout=15.0)  # 15 seconds total per request
 except ImportError:
     _openai_client = None
-
-
 # ============ HELPERS ============
 
 def _clean_text(text: str, max_len: int = 8000) -> str:
@@ -228,7 +228,7 @@ def generate_questions_ai(text: str, question_type: str, num_questions: int, mod
         raise ValueError("No text provided to AI question generator.")
 
     # Use a trimmed portion of the text (already cleaned earlier)
-    snippet = textwrap.shorten(text, width=6000, placeholder="...")
+    snippet = textwrap.shorten(text, width=3000, placeholder="...")
 
     # Label (for the prompt) and normalized type
     if question_type == "mcq":
@@ -295,7 +295,7 @@ NOTES (SOURCE MATERIAL):
         model=model_name,
         instructions=system_instructions,
         input=user_prompt,
-        max_output_tokens=2048,
+        max_output_tokens=900,
     )
 
     # SDK convenience property to get the concatenated text
