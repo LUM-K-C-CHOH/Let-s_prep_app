@@ -1,25 +1,85 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}New Quiz — LET'S PREP{% endblock %}
 
 {% block content %}
-<div class="lp-card">
-  <h2>Create a New Quiz</h2>
-  <form method="post" enctype="multipart/form-data" class="lp-form">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
+<section class="lp-card new-quiz-shell">
+  <div class="new-quiz-header">
+    <div>
+      <h1 class="lp-card-title">Create a new quiz</h1>
+      <p class="lp-card-subtitle">
+        Upload your notes and let LET'S PREP turn them into smart practice questions.
+      </p>
+    </div>
+    <div class="new-quiz-steps">
+      <span class="step-pill step-pill-active">1. Upload</span>
+      <span class="step-pill">2. Generate</span>
+      <span class="step-pill">3. Practice</span>
+    </div>
+  </div>
 
-    <label for="{{ form.title.id_for_label }}">Quiz Title</label>
-    {{ form.title }}
+  <div class="new-quiz-layout">
+    <!-- LEFT: Form -->
+    <div class="new-quiz-form">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
 
-    <label for="{{ form.file.id_for_label }}">Upload File</label>
-    {{ form.file }}
+        <div class="lp-form-row">
+          <label for="id_title">Quiz title</label>
+          {{ form.title }}
+          <p class="lp-help-text">
+            e.g. “Project Management – Week 3”, “Bio 102 – Photosynthesis”.
+          </p>
+        </div>
 
-    <label for="{{ form.question_type.id_for_label }}">Question Format</label>
-    {{ form.question_type }}
+        <div class="lp-form-row">
+          <label for="id_file">Upload your notes (PDF, Word, PPT, text)</label>
+          {{ form.file }}
+          <p class="lp-help-text">
+            We’ll scan the file and generate questions directly from your content.
+          </p>
+        </div>
 
-    <label for="{{ form.num_questions.id_for_label }}">Number of Questions</label>
-    {{ form.num_questions }}
+        <div class="new-quiz-inline">
+          <div class="lp-form-row">
+            <label for="id_question_type">Question type</label>
+            {{ form.question_type }}
+          </div>
 
-    <button type="submit" class="lp-button">Generate Quiz</button>
-  </form>
-</div>
+          <div class="lp-form-row">
+            <label for="id_num_questions"># of questions</label>
+            {{ form.num_questions }}
+          </div>
+        </div>
+
+        <button type="submit" class="lp-btn" style="margin-top:0.75rem;">
+          ⚡ Generate quiz
+        </button>
+      </form>
+    </div>
+
+    <!-- RIGHT: Colorful tips panel -->
+    <aside class="new-quiz-aside">
+      <div class="new-quiz-aside-inner">
+        <p class="aside-kicker">Pro tip</p>
+        <h2 class="aside-title">Cleaner notes → better questions</h2>
+        <p class="aside-text">
+          Try uploading lecture slides, homework PDFs, or your own typed summary.
+          The AI focuses on definitions, key ideas, and “why it matters”.
+        </p>
+
+        <ul class="aside-list">
+          <li>✅ Use headings and bullet points</li>
+          <li>✅ Keep one topic per file if possible</li>
+          <li>✅ Mix definitions + examples for richer questions</li>
+        </ul>
+
+        <p class="aside-footer">
+          PS: You can always regenerate a new quiz from the same file if you
+          want a different angle.
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>
 {% endblock %}

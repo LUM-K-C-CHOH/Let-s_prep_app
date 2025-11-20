@@ -130,6 +130,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ==== LET'S PREP AI SETTINGS ====
+USE_AI_QUESTIONS = True  # set to False if you want to turn AI off
+AI_MODEL_NAME = "gpt-4o-mini"  # you can change to "gpt-4o" if you have access
+
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'

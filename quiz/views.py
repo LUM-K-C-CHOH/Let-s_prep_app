@@ -7,7 +7,7 @@ from .forms import UploadQuizForm
 from .models import UploadedFile, QuizSession, Question
 from .utils.file_parsers import extract_text_from_file
 from .utils.question_generator import generate_questions
-
+from django.views.decorators.http import require_POST
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -22,13 +22,29 @@ def home(request):
 
 @login_required
 def dashboard(request):
-    """Show recent quiz sessions for the logged-in user."""
-    recent_sessions = QuizSession.objects.filter(
-        owner=request.user
-    ).order_by('-created_at')[:5]
-    return render(request, 'quiz/dashboard.html', {
+    sessions_qs = QuizSession.objects.filter(owner=request.user).order_by('-created_at')
+    recent_sessions = sessions_qs[:5]
+
+    total_quizzes = sessions_qs.count()
+    total_questions = Question.objects.filter(session__owner=request.user).count()
+
+    xp = total_questions * 10  # 10 XP per question generated
+    level = xp // 100 + 1      # every 100 XP = new level
+    next_level_xp = (level * 100)
+    xp_progress = 0
+    if next_level_xp:
+        xp_progress = int((xp / next_level_xp) * 100)
+
+    context = {
         'recent_sessions': recent_sessions,
-    })
+        'total_quizzes': total_quizzes,
+        'total_questions': total_questions,
+        'xp': xp,
+        'level': level,
+        'xp_progress': xp_progress,
+        'next_level_xp': next_level_xp,
+    }
+    return render(request, 'quiz/dashboard.html', context)
 
 
 @login_required
@@ -101,13 +117,37 @@ def quiz_detail(request, session_id):
 
 @login_required
 def history(request):
-    """Show the full history of quizzes for this user."""
+    """
+    Show the full history of quiz sessions for this user.
+    Newest first.
+    """
     sessions = QuizSession.objects.filter(
         owner=request.user
     ).order_by('-created_at')
+
     return render(request, 'quiz/history.html', {
         'sessions': sessions,
     })
+
+from django.views.decorators.http import require_POST
+
+@login_required
+@require_POST
+def delete_session(request, session_id):
+    session = get_object_or_404(QuizSession, id=session_id, owner=request.user)
+    session.delete()
+    return redirect('dashboard')
+
+@login_required
+def rename_session(request, session_id):
+    session = get_object_or_404(QuizSession, id=session_id, owner=request.user)
+    if request.method == "POST":
+        new_title = request.POST.get('title', '').trim() if hasattr(str, 'trim') else request.POST.get('title', '').strip()
+        if new_title:
+            session.title = new_title
+            session.save()
+            return redirect('quiz_detail', session_id=session.id)
+    return render(request, 'quiz/rename_session.html', {'session': session})
 
 
 def signup(request):
@@ -166,3 +206,20 @@ def export_quiz_pdf(request, session_id):
     p.showPage()
     p.save()
     return response
+
+@login_required
+def profile(request):
+  sessions = QuizSession.objects.filter(owner=request.user)
+  total = sessions.count()
+  total_mcq = sessions.filter(question_type='mcq').count()
+  total_flash = sessions.filter(question_type='flashcard').count()
+  total_fill = sessions.filter(question_type='fill_blank').count()
+  total_short = sessions.filter(question_type='short_answer').count()
+
+  return render(request, 'quiz/profile.html', {
+      'total_sessions': total,
+      'total_mcq': total_mcq,
+      'total_flashcards': total_flash,
+      'total_fill_blank': total_fill,
+      'total_short_answer': total_short,
+  })

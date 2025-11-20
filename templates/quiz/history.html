@@ -1,20 +1,41 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}History — LET'S PREP{% endblock %}
 
 {% block content %}
-<div class="lp-card">
-  <h2>Your Quiz History</h2>
+  <header class="page-header">
+    <h1 class="page-title">Study history</h1>
+    <p class="page-subtitle">
+      All the quiz sessions you’ve generated in LET'S PREP.
+    </p>
+  </header>
+
   {% if sessions %}
-    <ul>
-      {% for session in sessions %}
-        <li>
-          <a href="{% url 'quiz_detail' session.id %}">
-            {{ session.title }} ({{ session.get_question_type_display }}) - {{ session.created_at|date:"M d, Y H:i" }}
-          </a>
-        </li>
+    <div class="history-list">
+      {% for s in sessions %}
+        <a href="{% url 'quiz_detail' session_id=s.id %}" class="history-item">
+          <div class="history-main">
+            <div class="history-title-row">
+              <h2 class="history-title">{{ s.title }}</h2>
+              <span class="history-pill">
+                {{ s.get_question_type_display }}
+              </span>
+            </div>
+            <p class="history-meta">
+              Created {{ s.created_at|date:"M d, Y H:i" }} •
+              {{ s.num_questions }} question{{ s.num_questions|pluralize }}
+            </p>
+          </div>
+        </a>
       {% endfor %}
-    </ul>
+    </div>
   {% else %}
-    <p>No quiz history yet.</p>
+    <div class="lp-empty-state">
+      <h2>No sessions yet</h2>
+      <p>Generate your first quiz from the Dashboard, and it will show up here.</p>
+      <a href="{% url 'dashboard' %}" class="lp-btn lp-btn-primary">
+        Go to dashboard
+      </a>
+    </div>
   {% endif %}
-</div>
 {% endblock %}

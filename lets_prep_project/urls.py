@@ -21,6 +21,9 @@ urlpatterns = [
     path('quiz/<int:session_id>/', quiz_views.quiz_detail, name='quiz_detail'),
     path('history/', quiz_views.history, name='history'),
     path('quiz/<int:session_id>/pdf/', quiz_views.export_quiz_pdf, name='export_quiz_pdf'),
+    path('profile/', quiz_views.profile, name='profile'),
+    path('session/<int:session_id>/delete/', quiz_views.delete_session, name='delete_session'),
+    path('session/<int:session_id>/rename/', quiz_views.rename_session, name='rename_session'),
 ]
 
 if settings.DEBUG:

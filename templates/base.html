@@ -1,23 +1,91 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>LET'S PREP</title>
+  <meta charset="UTF-8">
+  <title>{% block title %}LET'S PREP{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
-<body>
-  <header>
-    <a href="{% url 'home' %}">LET'S PREP</a>
-    {% if user.is_authenticated %}
-      | <a href="{% url 'dashboard' %}">Dashboard</a>
-      | <a href="{% url 'new_quiz' %}">New Quiz</a>
-      | <a href="{% url 'history' %}">History</a>
-      | <a href="{% url 'logout' %}">Logout</a>
-    {% else %}
-      | <a href="{% url 'login' %}">Login</a>
-      | <a href="{% url 'signup' %}">Sign Up</a>
-    {% endif %}
+<body class="lp-body">
+
+  <!-- Top nav -->
+  <header class="lp-header">
+    <div class="lp-header-inner">
+      <a href="{% url 'home' %}" class="lp-logo">
+        <span class="lp-logo-mark">LP</span>
+        <span class="lp-logo-text">LET'S PREP</span>
+      </a>
+
+      <nav class="lp-nav">
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}" class="lp-nav-link">Dashboard</a>
+          <a href="{% url 'new_quiz' %}" class="lp-nav-link">New Quiz</a>
+          <a href="{% url 'history' %}" class="lp-nav-link">History</a>
+          <form method="post" action="{% url 'logout' %}" class="lp-nav-form">
+            {% csrf_token %}
+            <button type="submit" class="lp-btn lp-btn-ghost">Log out</button>
+            <button id="theme-toggle" type="button" class="theme-toggle-btn">
+              🌙
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="lp-nav-link">Log in</a>
+          <a href="{% url 'signup' %}" class="lp-btn lp-btn-small">Sign up</a>
+        {% endif %}
+      </nav>
+    </div>
   </header>
-  <hr>
-  {% block content %}{% endblock %}
+
+  <!-- Main page -->
+  <main class="lp-main">
+    {% if messages %}
+      <div class="lp-messages">
+        {% for message in messages %}
+          <div class="lp-alert lp-alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="lp-footer">
+    <div class="lp-footer-inner">
+      <span class="lp-footer-brand">LET'S PREP</span>
+      <span class="lp-footer-note">Study smarter, not harder 💫</span>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      const root = document.documentElement;
+      const saved = localStorage.getItem('lp-theme');
+      if (saved === 'dark') {
+        root.classList.add('lp-dark');
+      }
+    
+      document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('theme-toggle');
+        if (!btn) return;
+    
+        function updateIcon() {
+          btn.textContent = root.classList.contains('lp-dark') ? '☀️' : '🌙';
+        }
+        updateIcon();
+    
+        btn.addEventListener('click', () => {
+          root.classList.toggle('lp-dark');
+          localStorage.setItem(
+            'lp-theme',
+            root.classList.contains('lp-dark') ? 'dark' : 'light'
+          );
+          updateIcon();
+        });
+      });
+    })();
+    </script>
+
 </body>
 </html>

@@ -1,29 +1,82 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Dashboard — LET'S PREP{% endblock %}
 
 {% block content %}
-<div class="lp-card">
-  <h2>Your Dashboard</h2>
-  <p>Hi {{ user.username }} 👋. Start a new quiz or revisit recent ones.</p>
-  <p>
-    <a class="lp-button" href="{% url 'new_quiz' %}">Create New Quiz</a>
-    <a class="lp-button lp-button-secondary" href="{% url 'history' %}">View All History</a>
-  </p>
-</div>
+  <!-- Gamified streak card -->
+  <section class="lp-card" style="margin-bottom:1rem;">
+    <div class="lp-card-header">
+      <div>
+        <div class="lp-card-title">Your study streak</div>
+        <div class="lp-card-subtitle">
+          Level {{ level }} • {{ xp }} XP
+        </div>
+      </div>
+    </div>
 
-<div class="lp-card">
-  <h3>Recent Quizzes</h3>
-  {% if recent_sessions %}
-    <ul>
-      {% for session in recent_sessions %}
-        <li>
-          <a href="{% url 'quiz_detail' session.id %}">
-            {{ session.title }} ({{ session.get_question_type_display }}) - {{ session.created_at|date:"M d, Y H:i" }}
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No quizzes yet. Create your first one!</p>
-  {% endif %}
-</div>
+    <div class="quiz-progress-track">
+      <div class="quiz-progress-fill" style="width: {{ xp_progress }}%;"></div>
+    </div>
+
+    <p class="lp-help-text" style="margin-top:0.4rem;">
+      {{ total_quizzes }} quiz{{ total_quizzes|pluralize }} •
+      {{ total_questions }} question{{ total_questions|pluralize }} practiced.
+      {{ next_level_xp|add:"-0" }} XP needed for level {{ level|add:"1" }}.
+    </p>
+  </section>
+
+  <!-- Recent sessions card -->
+  <div class="lp-card">
+    <div class="lp-card-header">
+      <div>
+        <div class="lp-card-title">
+          Welcome back, {{ user.username|default:"friend" }} 👋
+        </div>
+        <div class="lp-card-subtitle">
+          Your recent quiz sessions
+        </div>
+      </div>
+      <a href="{% url 'new_quiz' %}" class="lp-btn lp-btn-small">+ New Quiz</a>
+    </div>
+
+    {% if recent_sessions %}
+      <table class="lp-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Type</th>
+            <th># Questions</th>
+            <th>Created</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for s in recent_sessions %}
+          <tr>
+            <td><a href="{% url 'quiz_detail' session_id=s.id %}">{{ s.title }}</a></td>
+            <td>{{ s.get_question_type_display }}</td>
+            <td>{{ s.num_questions }}</td>
+            <td>{{ s.created_at|date:"M d, Y H:i" }}</td>
+            <td>
+              <form method="post"
+                    action="{% url 'delete_session' session_id=s.id %}"
+                    style="display:inline;">
+                {% csrf_token %}
+                <button type="submit"
+                        class="lp-btn lp-btn-small lp-btn-ghost"
+                        onclick="return confirm('Delete this session?');">
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p style="font-size:0.9rem;color:#6b7280;margin-top:0.5rem;">
+        No sessions yet. Start by creating your first quiz from the “New Quiz” button above.
+      </p>
+    {% endif %}
+  </div>
 {% endblock %}

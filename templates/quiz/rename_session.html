@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Rename "{{ session.title }}"{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <h1 class="page-title">Rename session</h1>
+  <p class="page-subtitle">Give this quiz a clearer title.</p>
+</header>
+
+<form method="post" class="lp-form">
+  {% csrf_token %}
+  <div class="lp-form-row">
+    <label for="id_title">New title</label>
+    <input type="text" id="id_title" name="title"
+           value="{{ session.title }}" required>
+  </div>
+  <div style="margin-top:1rem;">
+    <button type="submit" class="lp-btn lp-btn-primary">Save</button>
+    <a href="{% url 'quiz_detail' session_id=session.id %}" class="lp-btn lp-btn-ghost">
+      Cancel
+    </a>
+  </div>
+</form>
+{% endblock %}

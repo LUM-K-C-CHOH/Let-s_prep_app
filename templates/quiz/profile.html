@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="lp-card">
+  <h2>Your profile</h2>
+  <p style="color:#9ca3af;font-size:0.9rem;">
+    Username: {{ request.user.username }}
+  </p>
+
+  <h3 style="font-size:1rem;margin-top:1rem;">Study stats</h3>
+  <ul style="list-style:none;padding-left:0;font-size:0.9rem;color:#9ca3af;">
+    <li>Total sessions: {{ total_sessions }}</li>
+    <li>MCQ sets: {{ total_mcq }}</li>
+    <li>Flashcard sets: {{ total_flashcards }}</li>
+    <li>Fill-in-the-blank sets: {{ total_fill_blank }}</li>
+    <li>Short answer sets: {{ total_short_answer }}</li>
+  </ul>
+</div>
+{% endblock %}

@@ -1,5 +1,54 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}LET'S PREP — Home{% endblock %}
+
 {% block content %}
-<h1>Welcome to LET'S PREP</h1>
-<p>Upload your study files and generate quiz questions.</p>
+<div class="lp-card">
+  <div class="lp-hero">
+    <div>
+      <h1 class="lp-hero-heading">
+        Turn your <span class="lp-hero-highlight">notes</span> into smart quizzes.
+      </h1>
+      <p class="lp-hero-text">
+        Upload PDFs, slides, images, or text. LET'S PREP analyzes your content and
+        generates flashcards, MCQs, and practice questions to help you actually remember.
+      </p>
+
+      <div class="lp-hero-cta">
+        {% if user.is_authenticated %}
+          <a href="{% url 'new_quiz' %}" class="lp-btn">
+            Create a quiz
+          </a>
+        {% else %}
+          <a href="{% url 'signup' %}" class="lp-btn">
+            Get started free
+          </a>
+          <a href="{% url 'login' %}" class="lp-nav-link" style="background:white;color:#1d4ed8;">
+            Or log in
+          </a>
+        {% endif %}
+      </div>
+
+      <p class="lp-hero-tagline">
+        White • Black • Blue • Purple — designed for focused late-night study sessions.
+      </p>
+    </div>
+
+    <div class="lp-hero-card">
+      <div class="lp-hero-card-title">
+        Smart study snapshot
+      </div>
+      <div class="lp-hero-card-pill">
+        <span>✨ AI-powered questions</span>
+        <span>•</span>
+        <span>Upload → Quiz in seconds</span>
+      </div>
+      <div class="lp-hero-meta">
+        <span>✔ Any file format</span>
+        <span>✔ Flashcards & MCQ</span>
+        <span>✔ Saved history</span>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
