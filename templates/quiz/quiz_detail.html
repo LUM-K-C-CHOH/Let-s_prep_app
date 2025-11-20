@@ -3,154 +3,147 @@
 {% block title %}{{ session.title }} — LET'S PREP{% endblock %}
 
 {% block content %}
-<div id="quiz-app" data-total="{{ questions|length }}">
-  <div class="question-layout">
-    <!-- LEFT: main quiz card -->
-    <section class="lp-card">
-      <div class="lp-card-header">
-        <div>
-          <div class="lp-card-title">{{ session.title }}</div>
-          <div class="lp-card-subtitle">
-            {{ session.get_question_type_display }} •
-            Question <span id="current-number">1</span> of {{ questions|length }}
+<div class="question-layout">
+  <!-- Left: question area -->
+  <section class="lp-card">
+    <div class="lp-card-header">
+      <div>
+        <div class="lp-card-title">{{ session.title }}</div>
+        <div class="lp-card-subtitle">
+          {{ session.get_question_type_display }} •
+          Question <span id="current-question-number">1</span> of {{ questions|length }}
+        </div>
+      </div>
+      <span class="lp-hero-card-pill">
+        ✨ AI-powered when available
+      </span>
+    </div>
+
+    {% for q in questions %}
+      <article class="question-card{% if forloop.first %} active{% endif %}"
+               data-index="{{ forloop.counter0 }}"
+               data-qtype="{{ q.question_type }}"
+               data-explanation="{{ q.explanation|default_if_none:''|escape }}">
+        <p class="quiz-question-text">
+          {{ q.prompt|linebreaksbr }}
+        </p>
+
+        {% if q.question_type == "mcq" %}
+          <div class="mcq-options" data-correct="{{ q.correct_option }}">
+            {% if q.option_a %}
+              <div class="mcq-option" data-option="A">
+                <div class="mcq-option-label">A</div>
+                <div class="mcq-option-text">{{ q.option_a }}</div>
+              </div>
+            {% endif %}
+            {% if q.option_b %}
+              <div class="mcq-option" data-option="B">
+                <div class="mcq-option-label">B</div>
+                <div class="mcq-option-text">{{ q.option_b }}</div>
+              </div>
+            {% endif %}
+            {% if q.option_c %}
+              <div class="mcq-option" data-option="C">
+                <div class="mcq-option-label">C</div>
+                <div class="mcq-option-text">{{ q.option_c }}</div>
+              </div>
+            {% endif %}
+            {% if q.option_d %}
+              <div class="mcq-option" data-option="D">
+                <div class="mcq-option-label">D</div>
+                <div class="mcq-option-text">{{ q.option_d }}</div>
+              </div>
+            {% endif %}
           </div>
-        </div>
-        <div class="quiz-header-right">
-          <span class="lp-hero-card-pill">
-            ✨ AI-powered when available
-          </span>
-          <div>
-            Score: <strong><span id="score">0</span></strong>
+
+        {% elif q.question_type == "flashcard" %}
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <strong>Tap to reveal answer</strong>
+              <div class="lp-help-text">Use this as a self-testing card.</div>
+            </div>
+            <div class="flashcard-back">
+              {{ q.answer_text|linebreaksbr }}
+            </div>
           </div>
-        </div>
+
+        {% else %}
+          <!-- short answer / fill blank -->
+          <div style="margin-top:0.9rem;">
+            <label class="lp-form-row">
+              <span>Your answer</span>
+              <input type="text"
+                     class="short-answer-input"
+                     data-correct="{{ q.answer_text|default_if_none:''|escape }}">
+            </label>
+            <button type="button"
+                    class="lp-btn lp-btn-small check-answer-btn">
+              Check answer
+            </button>
+          </div>
+        {% endif %}
+
+        <p class="question-feedback"></p>
+        <p class="question-ai-hint lp-help-text"></p>
+      </article>
+    {% endfor %}
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.2rem;">
+      <div>
+        <button id="prev-question" class="lp-btn lp-btn-small lp-btn-ghost">Previous</button>
+        <button id="next-question" class="lp-btn lp-btn-small" style="margin-left:0.3rem;">
+          Next
+        </button>
       </div>
+      <a href="{% url 'history' %}" class="lp-nav-link" style="background:#e5e7eb;color:#111827;">
+        Back to history
+      </a>
+    </div>
+  </section>
 
-      {% for q in questions %}
-        <article class="question-card{% if forloop.first %} active{% endif %}"
-                 data-index="{{ forloop.counter0 }}"
-                 data-qtype="{{ q.question_type }}"
-                 data-answer-text="{{ q.answer_text|default_if_none:''|escapejs }}"
-                 data-explanation="{{ q.explanation|default_if_none:''|escapejs }}">
-          <p class="quiz-question-text">
-            {{ q.prompt|linebreaksbr }}
-          </p>
+  <!-- Right: side panel -->
+  <aside class="quiz-side-panel">
+    <div class="quiz-side-title">Session overview</div>
+    <div class="quiz-meta">
+      {{ session.created_at|date:"M d, Y H:i" }} • {{ session.num_questions }} questions
+    </div>
 
-          {% if q.question_type == "mcq" %}
-            <div class="mcq-options" data-correct="{{ q.correct_option }}">
-              {% if q.option_a %}
-                <button type="button" class="mcq-option" data-letter="A">
-                  <span class="mcq-option-label">A</span>
-                  <span class="mcq-option-text">{{ q.option_a }}</span>
-                </button>
-              {% endif %}
-              {% if q.option_b %}
-                <button type="button" class="mcq-option" data-letter="B">
-                  <span class="mcq-option-label">B</span>
-                  <span class="mcq-option-text">{{ q.option_b }}</span>
-                </button>
-              {% endif %}
-              {% if q.option_c %}
-                <button type="button" class="mcq-option" data-letter="C">
-                  <span class="mcq-option-label">C</span>
-                  <span class="mcq-option-text">{{ q.option_c }}</span>
-                </button>
-              {% endif %}
-              {% if q.option_d %}
-                <button type="button" class="mcq-option" data-letter="D">
-                  <span class="mcq-option-label">D</span>
-                  <span class="mcq-option-text">{{ q.option_d }}</span>
-                </button>
-              {% endif %}
-            </div>
+    <div class="quiz-progress-track">
+      <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
+    </div>
+    <div style="font-size:0.78rem;margin-bottom:0.9rem;">
+      Question <span id="progress-current">1</span> / {{ questions|length }}
+    </div>
 
-          {% elif q.question_type == "flashcard" %}
-            <div class="flashcard">
-              <div class="flashcard-front">
-                <strong>Tap to reveal answer</strong>
-                <div class="lp-help-text">Use this as a self-testing card.</div>
-              </div>
-              <div class="flashcard-back">
-                {{ q.answer_text }}
-              </div>
-            </div>
-
-          {% else %}
-            <!-- short answer / fill in the blank -->
-            <div style="margin-top:0.9rem;">
-              <div class="lp-form-row">
-                <label>Your answer</label>
-                <input type="text" class="short-answer-input"
-                       placeholder="Type your answer here…">
-              </div>
-              <button type="button" class="lp-btn lp-btn-small reveal-answer">
-                Check answer
-              </button>
-              <div class="answer-revealed" style="margin-top:0.4rem;font-size:0.85rem;"></div>
-            </div>
-          {% endif %}
-
-          <div class="question-feedback"></div>
-          <div class="ai-explanation" style="display:none;font-size:0.8rem;margin-top:0.2rem;"></div>
-        </article>
-      {% endfor %}
-
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.2rem;">
-        <div>
-          <button id="prev-btn" class="lp-btn lp-btn-small lp-btn-ghost">Previous</button>
-          <button id="next-btn" class="lp-btn lp-btn-small" style="margin-left:0.3rem;">Next</button>
-        </div>
-        <a href="{% url 'history' %}" class="lp-nav-link" style="background:#e5e7eb;color:#111827;">
-          Back to history
-        </a>
-      </div>
-    </section>
-
-    <!-- RIGHT: progress side panel -->
-    <aside class="quiz-side-panel">
-      <div class="quiz-side-title">Session overview</div>
-      <div class="quiz-meta">
-        {{ session.created_at|date:"M d, Y H:i" }} • {{ session.num_questions }} questions
-      </div>
-
-      <div class="quiz-progress-track">
-        <div class="quiz-progress-fill" id="progress-fill"></div>
-      </div>
-      <div style="font-size:0.78rem;margin-bottom:0.9rem;">
-        Question <span id="progress-current">1</span> / {{ questions|length }}
-      </div>
-
-      <div style="font-size:0.8rem;color:#9ca3af;">
-        Tip: Use ← → arrow keys to move between questions.
-      </div>
-    </aside>
-  </div>
+    <div style="font-size:0.8rem;color:#9ca3af;">
+      Tip: Use ← → arrow keys to move between questions.
+    </div>
+  </aside>
 </div>
 
 <script>
 (function() {
-  const container = document.getElementById('quiz-app');
-  if (!container) return;
-
   const cards = Array.from(document.querySelectorAll('.question-card'));
   if (!cards.length) return;
 
-  let currentIndex = 0;
-  let score = 0;
-
-  const total = parseInt(container.dataset.total, 10) || cards.length;
-  const scoreSpan = document.getElementById('score');
-  const currentNumberSpan = document.getElementById('current-number');
+  const prevBtn = document.getElementById('prev-question');
+  const nextBtn = document.getElementById('next-question');
+  const currentNumberSpan = document.getElementById('current-question-number');
   const progressCurrentSpan = document.getElementById('progress-current');
-  const prevBtn = document.getElementById('prev-btn');
-  const nextBtn = document.getElementById('next-btn');
-  const progressFill = document.getElementById('progress-fill');
+  const progressFill = document.getElementById('quiz-progress-fill');
+
+  // Where to go when the quiz is finished
+  const finishUrl = "{% url 'dashboard' %}";   // change to 'new_quiz' if you prefer
+
+  let currentIndex = 0;
+  const total = cards.length;
 
   function showCard(index) {
     cards.forEach((card, i) => {
       if (i === index) {
         card.style.display = 'block';
         card.classList.remove('active');
-        void card.offsetWidth; // restart CSS animation
+        void card.offsetWidth;          // restart CSS animation
         card.classList.add('active');
       } else {
         card.style.display = 'none';
@@ -159,141 +152,152 @@
     });
 
     currentIndex = index;
-    const num = index + 1;
-    if (currentNumberSpan) currentNumberSpan.textContent = String(num);
-    if (progressCurrentSpan) progressCurrentSpan.textContent = String(num);
 
-    prevBtn.disabled = (index === 0);
-    nextBtn.disabled = (index === cards.length - 1);
+    if (currentNumberSpan) currentNumberSpan.textContent = (index + 1).toString();
+    if (progressCurrentSpan) progressCurrentSpan.textContent = (index + 1).toString();
+
+    if (prevBtn) prevBtn.disabled = (index === 0);
+
+    if (nextBtn) {
+      if (index === total - 1) {
+        nextBtn.textContent = "Done";
+      } else {
+        nextBtn.textContent = "Next";
+      }
+    }
 
     if (progressFill) {
-      const progress = (num / total) * 100;
-      progressFill.style.width = progress + '%';
+      const pct = ((index + 1) / total) * 100;
+      progressFill.style.width = pct + "%";
     }
   }
 
-  // Attach behaviour to each question card
+  // Behaviour per card
   cards.forEach((card) => {
-    const qtype = card.dataset.qtype;
-    const explanation = (card.dataset.explanation || '').trim();
-    const answerText = (card.dataset.answerText || '').trim();
+    const qType = card.getAttribute('data-qtype');
+    const explanationText = card.getAttribute('data-explanation') || '';
+    const aiHint = card.querySelector('.question-ai-hint');
 
-    const feedbackEl = card.querySelector('.question-feedback');
-    const aiEl = card.querySelector('.ai-explanation');
+    // MCQ
+    if (qType === 'mcq') {
+      const options = card.querySelectorAll('.mcq-option');
+      const correct = card.querySelector('.mcq-options')?.getAttribute('data-correct') || '';
+      const feedback = card.querySelector('.question-feedback');
 
-    if (feedbackEl) {
-      feedbackEl.textContent = '';
-    }
-    if (aiEl) {
-      aiEl.style.display = 'none';
-      aiEl.textContent = '';
-    }
-
-    // MCQ logic
-    if (qtype === 'mcq') {
-      const options = Array.from(card.querySelectorAll('.mcq-option'));
-      const optionsContainer = card.querySelector('.mcq-options');
-      if (!optionsContainer || !options.length || !feedbackEl) return;
-
-      const correct = optionsContainer.getAttribute('data-correct') || '';
-      let answered = false;
-
-      options.forEach(btn => {
-        btn.addEventListener('click', () => {
-          if (answered) return;
-          const picked = btn.getAttribute('data-letter');
+      options.forEach(opt => {
+        opt.addEventListener('click', () => {
+          if (!correct) return;
+          const picked = opt.getAttribute('data-option');
 
           options.forEach(o => o.classList.remove('correct', 'incorrect'));
 
           if (picked === correct) {
-            btn.classList.add('correct');
-            feedbackEl.textContent = '✅ Nice! That matches the notes.';
-            feedbackEl.classList.remove('feedback-incorrect');
-            feedbackEl.classList.add('feedback-correct');
-            score += 1;
-            if (scoreSpan) scoreSpan.textContent = String(score);
+            opt.classList.add('correct');
+            if (feedback) {
+              feedback.textContent = "✅ Correct!";
+              feedback.classList.add('feedback-correct');
+              feedback.classList.remove('feedback-incorrect');
+            }
           } else {
-            btn.classList.add('incorrect');
-            feedbackEl.textContent = '❌ Not quite. Correct answer: ' + correct;
-            feedbackEl.classList.remove('feedback-correct');
-            feedbackEl.classList.add('feedback-incorrect');
-
+            opt.classList.add('incorrect');
             options.forEach(o => {
-              if (o.getAttribute('data-letter') === correct) {
+              if (o.getAttribute('data-option') === correct) {
                 o.classList.add('correct');
               }
             });
-
-            if (aiEl && explanation) {
-              aiEl.style.display = 'block';
-              aiEl.textContent = 'AI hint: ' + explanation;
+            if (feedback) {
+              feedback.textContent = "❌ Not quite.";
+              feedback.classList.add('feedback-incorrect');
+              feedback.classList.remove('feedback-correct');
             }
           }
-          answered = true;
+
+          if (aiHint && explanationText) {
+            aiHint.textContent = "AI hint: " + explanationText;
+          }
         });
       });
     }
 
-    // Flashcard logic
-    if (qtype === 'flashcard') {
-      const flashcard = card.querySelector('.flashcard');
-      if (flashcard) {
-        flashcard.addEventListener('click', () => {
-          flashcard.classList.toggle('flipped');
-        });
+    // Flashcard
+    const flashcard = card.querySelector('.flashcard');
+    if (flashcard) {
+      flashcard.addEventListener('click', () => {
+        flashcard.classList.toggle('flipped');
+      });
+    }
+
+    // Short answer / fill-blank
+    const input = card.querySelector('.short-answer-input');
+    const checkBtn = card.querySelector('.check-answer-btn');
+    const feedback = card.querySelector('.question-feedback');
+    const correctAnswer = input ? (input.getAttribute('data-correct') || '') : '';
+
+    function checkShortAnswer() {
+      if (!input || !feedback) return;
+      const given = (input.value || '').trim().toLowerCase();
+      const expected = (correctAnswer || '').trim().toLowerCase();
+
+      if (!expected) {
+        feedback.textContent = "No stored answer for this question.";
+        return;
+      }
+
+      if (given === expected) {
+        feedback.textContent = "✅ Correct!";
+        feedback.classList.add('feedback-correct');
+        feedback.classList.remove('feedback-incorrect');
+      } else {
+        feedback.textContent = "❌ Not quite. Correct answer: " + correctAnswer;
+        feedback.classList.add('feedback-incorrect');
+        feedback.classList.remove('feedback-correct');
+      }
+
+      if (aiHint && explanationText) {
+        aiHint.textContent = "AI hint: " + explanationText;
       }
     }
 
-    // Short-answer / fill_blank logic
-    if (qtype !== 'mcq' && qtype !== 'flashcard') {
-      const input = card.querySelector('.short-answer-input');
-      const btn = card.querySelector('.reveal-answer');
-      const result = card.querySelector('.answer-revealed');
-      if (!input || !btn || !result) return;
-
-      btn.addEventListener('click', () => {
-        const correctAns = answerText;
-        const given = (input.value || '').trim();
-
-        if (!correctAns) {
-          result.textContent = 'Answer: (no stored answer text).';
-          return;
-        }
-
-        if (!given) {
-          result.textContent = 'Answer: ' + correctAns;
-          return;
-        }
-
-        if (given.toLowerCase() === correctAns.toLowerCase()) {
-          result.textContent = '✅ Correct! Answer: ' + correctAns;
-        } else {
-          result.textContent = '❌ Not quite. Correct answer: ' + correctAns;
-          if (aiEl && explanation) {
-            aiEl.style.display = 'block';
-            aiEl.textContent = 'AI hint: ' + explanation;
-          }
+    if (checkBtn) {
+      checkBtn.addEventListener('click', checkShortAnswer);
+    }
+    if (input) {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          checkShortAnswer();
         }
       });
     }
   });
 
-  prevBtn.addEventListener('click', () => {
-    if (currentIndex > 0) showCard(currentIndex - 1);
-  });
+  // Navigation
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      if (currentIndex > 0) showCard(currentIndex - 1);
+    });
+  }
 
-  nextBtn.addEventListener('click', () => {
-    if (currentIndex < cards.length - 1) showCard(currentIndex + 1);
-  });
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex < total - 1) {
+        showCard(currentIndex + 1);
+      } else {
+        // Last question -> dashboard (or new_quiz)
+        window.location.href = finishUrl;
+      }
+    });
+  }
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight' && currentIndex < cards.length - 1) {
+    if (e.key === 'ArrowRight' && currentIndex < total - 1) {
       showCard(currentIndex + 1);
     } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
       showCard(currentIndex - 1);
     }
   });
 
+  // Start
   showCard(0);
 })();
 </script>

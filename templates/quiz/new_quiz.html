@@ -3,29 +3,22 @@
 {% block title %}New Quiz — LET'S PREP{% endblock %}
 
 {% block content %}
-<section class="lp-card new-quiz-shell">
-  <div class="new-quiz-header">
-    <div>
-      <h1 class="lp-card-title">Create a new quiz</h1>
-      <p class="lp-card-subtitle">
+<div class="lp-card newquiz-card">
+  <div class="newquiz-grid">
+    <!-- LEFT: form -->
+    <section class="newquiz-main">
+      <h1 class="lp-card-title" style="margin-bottom:0.25rem;">
+        Create a new quiz
+      </h1>
+      <p class="lp-card-subtitle" style="margin-bottom:1.2rem;">
         Upload your notes and let LET'S PREP turn them into smart practice questions.
       </p>
-    </div>
-    <div class="new-quiz-steps">
-      <span class="step-pill step-pill-active">1. Upload</span>
-      <span class="step-pill">2. Generate</span>
-      <span class="step-pill">3. Practice</span>
-    </div>
-  </div>
 
-  <div class="new-quiz-layout">
-    <!-- LEFT: Form -->
-    <div class="new-quiz-form">
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
         <div class="lp-form-row">
-          <label for="id_title">Quiz title</label>
+          <label for="{{ form.title.id_for_label }}">Quiz title</label>
           {{ form.title }}
           <p class="lp-help-text">
             e.g. “Project Management – Week 3”, “Bio 102 – Photosynthesis”.
@@ -33,53 +26,75 @@
         </div>
 
         <div class="lp-form-row">
-          <label for="id_file">Upload your notes (PDF, Word, PPT, text)</label>
+          <label for="{{ form.file.id_for_label }}">Upload your notes (PDF, Word, PPT, text)</label>
           {{ form.file }}
           <p class="lp-help-text">
             We’ll scan the file and generate questions directly from your content.
           </p>
         </div>
 
-        <div class="new-quiz-inline">
-          <div class="lp-form-row">
-            <label for="id_question_type">Question type</label>
+        <div class="newquiz-inline">
+          <div class="lp-form-row" style="flex: 3;">
+            <label for="{{ form.question_type.id_for_label }}">Question type</label>
             {{ form.question_type }}
           </div>
-
-          <div class="lp-form-row">
-            <label for="id_num_questions"># of questions</label>
+          <div class="lp-form-row" style="flex: 1.4;">
+            <label for="{{ form.num_questions.id_for_label }}"># of questions</label>
             {{ form.num_questions }}
           </div>
         </div>
 
-        <button type="submit" class="lp-btn" style="margin-top:0.75rem;">
+        <button type="submit" class="lp-btn" style="margin-top:0.5rem;">
           ⚡ Generate quiz
         </button>
+
+        <p class="lp-help-text" style="margin-top:0.4rem;">
+          AI generation is used when available. If anything fails, we’ll fall back to an
+          offline mode so you always get questions.
+        </p>
       </form>
-    </div>
+    </section>
 
-    <!-- RIGHT: Colorful tips panel -->
-    <aside class="new-quiz-aside">
-      <div class="new-quiz-aside-inner">
-        <p class="aside-kicker">Pro tip</p>
-        <h2 class="aside-title">Cleaner notes → better questions</h2>
-        <p class="aside-text">
-          Try uploading lecture slides, homework PDFs, or your own typed summary.
-          The AI focuses on definitions, key ideas, and “why it matters”.
+    <!-- RIGHT: Pro tip card -->
+    <aside class="newquiz-aside">
+      <div class="newquiz-aside-header">
+        <span class="newquiz-pill">Pro tip</span>
+        <h2>Cleaner notes → better questions</h2>
+        <p>
+          LET'S PREP works best when your upload is focused and well-structured.
+          A few tweaks to your notes can dramatically improve the quality of the questions.
         </p>
+      </div>
 
-        <ul class="aside-list">
-          <li>✅ Use headings and bullet points</li>
-          <li>✅ Keep one topic per file if possible</li>
-          <li>✅ Mix definitions + examples for richer questions</li>
-        </ul>
+      <ul class="newquiz-checklist">
+        <li>
+          <span class="check-icon">✔</span>
+          <div>
+            <strong>Use headings & bullet points.</strong>
+            <div class="check-sub">Break your notes into sections like concepts, formulas, and examples.</div>
+          </div>
+        </li>
+        <li>
+          <span class="check-icon">✔</span>
+          <div>
+            <strong>Keep one topic per file.</strong>
+            <div class="check-sub">Mixing too many topics can make questions feel random.</div>
+          </div>
+        </li>
+        <li>
+          <span class="check-icon">✔</span>
+          <div>
+            <strong>Highlight key definitions & “why it matters”.</strong>
+            <div class="check-sub">Those become perfect flashcards and conceptual questions.</div>
+          </div>
+        </li>
+      </ul>
 
-        <p class="aside-footer">
-          PS: You can always regenerate a new quiz from the same file if you
-          want a different angle.
-        </p>
+      <div class="newquiz-footer-note">
+        PS: You can always generate a new quiz from the same file if you want
+        a different angle (e.g. flashcards today, MCQs before the exam).
       </div>
     </aside>
   </div>
-</section>
+</div>
 {% endblock %}

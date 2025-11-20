@@ -1,41 +1,46 @@
 {% extends "base.html" %}
 
-{% block title %}History — LET'S PREP{% endblock %}
+{% block title %}Study history — LET'S PREP{% endblock %}
 
 {% block content %}
-  <header class="page-header">
-    <h1 class="page-title">Study history</h1>
-    <p class="page-subtitle">
-      All the quiz sessions you’ve generated in LET'S PREP.
-    </p>
-  </header>
+<div class="lp-card">
+  <div class="lp-card-header">
+    <div>
+      <div class="lp-card-title">Study history</div>
+      <div class="lp-card-subtitle">
+        All the quiz sessions you’ve generated in LET'S PREP.
+      </div>
+    </div>
+  </div>
 
   {% if sessions %}
     <div class="history-list">
       {% for s in sessions %}
-        <a href="{% url 'quiz_detail' session_id=s.id %}" class="history-item">
-          <div class="history-main">
-            <div class="history-title-row">
-              <h2 class="history-title">{{ s.title }}</h2>
-              <span class="history-pill">
-                {{ s.get_question_type_display }}
-              </span>
-            </div>
-            <p class="history-meta">
-              Created {{ s.created_at|date:"M d, Y H:i" }} •
-              {{ s.num_questions }} question{{ s.num_questions|pluralize }}
-            </p>
+        <a href="{% url 'quiz_detail' s.id %}" class="history-item">
+          <div class="history-title-row">
+            <div class="history-title">{{ s.title }}</div>
+            <span class="history-pill">
+              {{ s.get_question_type_display }} · {{ s.num_questions }} q
+            </span>
+          </div>
+          <div class="history-meta">
+            Created {{ s.created_at|date:"M d, Y H:i" }}
           </div>
         </a>
       {% endfor %}
     </div>
   {% else %}
-    <div class="lp-empty-state">
-      <h2>No sessions yet</h2>
-      <p>Generate your first quiz from the Dashboard, and it will show up here.</p>
-      <a href="{% url 'dashboard' %}" class="lp-btn lp-btn-primary">
+    <div class="empty-state">
+      <div class="empty-icon">🕒</div>
+      <div class="empty-title">No sessions yet</div>
+      <p class="empty-body">
+        Generate your first quiz from the Dashboard and it’ll show up here
+        so you can revisit old sets anytime.
+      </p>
+      <a href="{% url 'dashboard' %}" class="lp-btn lp-btn-small">
         Go to dashboard
       </a>
     </div>
   {% endif %}
+</div>
 {% endblock %}

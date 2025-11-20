@@ -224,15 +224,14 @@ body {
   align-items: center;
 }
 
-.lp-hero-heading {
-  font-size: 2rem;
-  font-weight: 800;
-  margin-bottom: 0.6rem;
-  color: #0f172a;
+/* Hero heading visibility in dark mode */
+.lp-dark .lp-hero-heading {
+  color: #e5e7eb; /* light gray so "Turn your" and "into smart quizzes." show up */
 }
 
-.lp-hero-highlight {
-  background: linear-gradient(120deg, #2563eb, #7c3aed);
+/* Slightly brighter gradient for dark background */
+.lp-dark .lp-hero-highlight {
+  background: linear-gradient(120deg, #a855f7, #38bdf8);
   -webkit-background-clip: text;
   color: transparent;
 }
@@ -696,6 +695,16 @@ body {
   color: #b91c1c;
 }
 
+.lp-dark .question-feedback {
+  color: #9ca3af;
+}
+.lp-dark .question-feedback.feedback-correct {
+  color: #6ee7b7;
+}
+.lp-dark .question-feedback.feedback-incorrect {
+  color: #fecaca;
+}
+
 /* ===== File preview on New Quiz ===== */
 
 .file-preview {
@@ -931,6 +940,19 @@ body {
   background: rgba(79, 70, 229, 0.25);
 }
 
+/* Fix history titles in dark mode */
+.lp-dark .history-title {
+  color: #e0e7ff !important;
+}
+
+.lp-dark .history-item {
+  background: rgba(15, 23, 42, 0.4);
+  border-color: rgba(129, 140, 248, 0.5);
+}
+
+.lp-dark .history-meta {
+  color: #cbd5e1;
+}
 
 /* ===== New Quiz page ===== */
 
@@ -1047,5 +1069,154 @@ body {
 @media (max-width: 860px) {
   .new-quiz-layout {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ==== Dark-mode form fixes ==== */
+.lp-dark .lp-form-row label {
+  color: #e5e7eb;
+}
+
+/* Form inputs – explicit text colors */
+.lp-form-row input[type="text"],
+.lp-form-row input[type="number"],
+.lp-form-row input[type="file"],
+.lp-form-row select {
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.9rem;
+  outline: none;
+  background: #f9fafb;
+  color: #111827;              /* make sure text is visible in light mode */
+}
+
+.lp-dark .lp-form-row input[type="text"],
+.lp-dark .lp-form-row input[type="number"],
+.lp-dark .lp-form-row input[type="file"],
+.lp-dark .lp-form-row select {
+  background: #020617;
+  color: #f9fafb;              /* light text on dark background */
+  border-color: #4b5563;
+}
+
+.lp-dark .lp-form-row input::placeholder,
+.lp-dark .lp-form-row textarea::placeholder {
+  color: #6b7280;
+}
+
+/* Make file input readable in dark mode too */
+.lp-dark input[type="file"] {
+  color: #e5e7eb;
+}
+
+
+
+/* ==== New Quiz layout ==== */
+
+.newquiz-card {
+  padding: 1.6rem 1.5rem;
+}
+
+.newquiz-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) minmax(0, 1.6fr);
+  gap: 1.7rem;
+  align-items: flex-start;
+}
+
+.newquiz-main {
+  min-width: 0;
+}
+
+/* Pro tip / aside card */
+.newquiz-aside {
+  border-radius: 18px;
+  padding: 1.3rem 1.2rem;
+  background: radial-gradient(circle at 0 0, #4f46e5, #1d4ed8 40%, #0f172a 95%);
+  color: #e5e7eb;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.7);
+}
+
+.newquiz-aside-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0.25rem 0 0.35rem;
+}
+
+.newquiz-aside-header p {
+  font-size: 0.85rem;
+  color: #c7d2fe;
+  margin: 0;
+}
+
+.newquiz-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  background: rgba(15, 23, 42, 0.5);
+  padding: 0.15rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(191, 219, 254, 0.6);
+}
+
+.newquiz-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0.9rem 0 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.newquiz-checklist li {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+}
+
+.check-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #bbf7d0;
+  margin-top: 0.12rem;
+}
+
+.check-sub {
+  font-size: 0.8rem;
+  color: #c7d2fe;
+}
+
+.newquiz-footer-note {
+  font-size: 0.78rem;
+  color: #e5e7eb;
+  opacity: 0.9;
+  border-top: 1px solid rgba(129, 140, 248, 0.5);
+  padding-top: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+/* Inline layout for type + # questions */
+.newquiz-inline {
+  display: flex;
+  gap: 0.8rem;
+}
+
+/* Responsive */
+@media (max-width: 860px) {
+  .newquiz-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .newquiz-aside {
+    order: -1;
   }
 }
