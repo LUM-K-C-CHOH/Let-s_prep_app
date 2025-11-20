@@ -12,9 +12,7 @@ Users can upload PDFs, Word documents, PowerPoints, images, or plain text files,
 
 The application includes user authentication, persistent quiz history, interactive quiz navigation, and a clean dashboard for managing all generated study sessions.
 
-This version uses offline (non-AI) question generation logic, ensuring full functionality without API dependencies.
 
-⸻
 
 🌟 Key Features
 
@@ -80,35 +78,7 @@ File Processing Libraries
 	•	pytesseract
 	•	Pillow
 
-⸻
 
-🗂 Project Structure
-
-lets_prep/
-│
-├── lets_prep_project/         # Project-level configuration
-│   ├── settings.py
-│   ├── urls.py
-│
-├── quiz/                      # Main app
-│   ├── models.py              # Database models
-│   ├── views.py               # View logic
-│   ├── forms.py               # Forms for file upload & quiz settings
-│   ├── utils/                 # File parsing & question generation
-│   │   ├── file_parsers.py
-│   │   ├── question_generator.py
-│   ├── migrations/
-│
-├── templates/                 # Django templates
-│   ├── base.html
-│   ├── quiz/
-│   ├── registration/
-│
-└── static/
-    └── css/style.css
-
-
-⸻
 
 🚀 Getting Started
 
@@ -149,15 +119,15 @@ http://127.0.0.1:8000/
 
 ⸻
 
-📝 Notes
+📝 Notes(Finally did this)
 	•	This version uses offline logic for question generation (no API required).
 	•	To enable AI-enhanced conceptual question generation, integrate an AI model into question_generator.py.
 	•	SQLite is sufficient for development; switch to PostgreSQL for production deployments.
 
 ⸻
 
-🧩 Future Enhancements
-	•	AI-powered study questions
+🧩 Future Enhancements(Completed)
+	•	AI-powered study questions 
 	•	Tag-based question grouping
 	•	Flashcard flip animations
 	•	Dark mode UI
@@ -169,7 +139,9 @@ http://127.0.0.1:8000/
 👩‍💻 Author
 
 Lum Kelly Chelsie Choh
-Developer • Computer Science @ Howard University
+Janelle Yankey
+Edward Sie
+Developers • Computer Science @ Howard University
 
 
 	•	A version tailored for your portfolio website
