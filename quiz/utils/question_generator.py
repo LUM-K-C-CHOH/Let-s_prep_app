@@ -3,11 +3,13 @@ import json
 import random
 import textwrap
 
+# ---------- OpenAI client (safe init) ----------
+
 try:
-    # New OpenAI client, from openai>=1.x
     from openai import OpenAI
-    _openai_client = OpenAI()
-except ImportError:
+    _openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+except Exception:
+    # If OpenAI not installed or no key, we just won't use AI
     _openai_client = None
 
 
@@ -30,7 +32,7 @@ def generate_questions(text: str, question_type: str, num_questions: int):
     - If AI is enabled + configured, use the AI generator.
     - Otherwise, fall back to the simple rule-based generator.
     """
-    from django.conf import settings  # imported lazily to avoid issues at import time
+    from django.conf import settings  # imported lazily
 
     text = _clean_text(text)
     num_questions = max(1, int(num_questions))
@@ -48,7 +50,6 @@ def generate_questions(text: str, question_type: str, num_questions: int):
             print(">>> LETS_PREP: AI generation failed, falling back to SIMPLE mode:", e)
 
     print(">>> LETS_PREP: Using SIMPLE (offline) question generator.")
-    # Fallback: simple offline generator
     return generate_questions_simple(text, question_type, num_questions)
 
 
@@ -99,15 +100,28 @@ def generate_questions_simple(text: str, question_type: str, num_questions: int)
                 "According to your notes, which statement best matches this idea?\n\n"
                 f"{stem}"
             )
-            q["option_a"] = concept
-            q["option_b"] = "A detail that does not fully match the notes."
-            q["option_c"] = "A statement that contradicts the notes."
-            q["option_d"] = "An unrelated concept."
-            q["correct_option"] = "A"
+
+            # Randomize which letter is correct
+            choices = [
+                ("correct", concept),
+                ("d1", "A detail that does not fully match the notes."),
+                ("d2", "A statement that contradicts the notes."),
+                ("d3", "An unrelated concept."),
+            ]
+            random.shuffle(choices)
+
+            letters = ["a", "b", "c", "d"]
+            correct_letter = None
+
+            for idx, (tag, text_choice) in enumerate(choices):
+                letter = letters[idx]
+                q[f"option_{letter}"] = text_choice
+                if tag == "correct":
+                    correct_letter = letter.upper()
+
+            q["correct_option"] = correct_letter
             q["answer_text"] = concept
-            q["explanation"] = (
-                "Option A is closest to the wording and meaning in the notes."
-            )
+            q["explanation"] = "The correct option is the one that best matches the idea in your notes."
 
         elif question_type in ("fill_blank", "short_answer"):
             words = base.split()
@@ -219,19 +233,13 @@ NOTES:
 
     # SDK convenience property to get the concatenated text
     raw_output = response.output_text  # type: ignore[attr-defined]
-    # print a tiny preview if you want:
-    # print(">>> LETS_PREP: Raw AI output preview:", raw_output[:200])
-
-    # ---------- CLEAN THE RAW OUTPUT ----------
     text = raw_output.strip()
 
     # Strip markdown code fences like ```json ... ```
     if text.startswith("```"):
-        # drop the first line (```json or ```)
         first_newline = text.find("\n")
         if first_newline != -1:
             text = text[first_newline + 1 :]
-        # drop trailing ```
         if text.rstrip().endswith("```"):
             text = text.rstrip()[:-3].strip()
 
@@ -241,7 +249,7 @@ NOTES:
     if start != -1 and end != -1 and end > start:
         text = text[start : end + 1]
 
-    # Now parse JSON
+    # Parse JSON
     try:
         data = json.loads(text)
     except Exception as e:
@@ -262,6 +270,29 @@ NOTES:
             "answer_text": item.get("answer_text", ""),
             "explanation": item.get("explanation", ""),
         }
+
+        # ---------- RANDOMIZE MCQ ANSWERS FROM AI ---------- #
+        if q["type"] == "mcq":
+            options = [
+                ("A", q["option_a"]),
+                ("B", q["option_b"]),
+                ("C", q["option_c"]),
+                ("D", q["option_d"]),
+            ]
+
+            original_correct_letter = q["correct_option"]
+            original_correct_text = dict(options).get(original_correct_letter, "")
+
+            random.shuffle(options)
+
+            letters = ["A", "B", "C", "D"]
+            for idx, (_, text_choice) in enumerate(options):
+                key = letters[idx]
+                q[f"option_{key.lower()}"] = text_choice
+                if text_choice == original_correct_text:
+                    q["correct_option"] = key
+        # --------------------------------------------------- #
+
         questions.append(q)
 
     return questions
