@@ -120,14 +120,7 @@ http://127.0.0.1:8000/
 
 ⸻
 
-📝 Notes(Finally did this)
-	•	This version uses offline logic for question generation (no API required).
-	•	To enable AI-enhanced conceptual question generation, integrate an AI model into question_generator.py.
-	•	SQLite is sufficient for development; switch to PostgreSQL for production deployments.
-
-⸻
-
-🧩 Future Enhancements(Completed)
+🧩  Enhancements(Completed)
 	•	AI-powered study questions 
 	•	Tag-based question grouping
 	•	Flashcard flip animations
@@ -142,9 +135,5 @@ http://127.0.0.1:8000/
 Lum Kelly Chelsie Choh
 Janelle Yankey
 Edward Sie
-Developers • Computer Science @ Howard University
+Developers • Computer Science Students @ Howard University
 
-
-	•	A version tailored for your portfolio website
-
-Just tell me!
